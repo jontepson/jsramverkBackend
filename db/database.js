@@ -8,7 +8,10 @@ const mongo = require("mongodb").MongoClient;
 let config;
 let username;
 let password;
-const collectionName = "editorCollection";
+let collectionName;
+let cluster;
+let databaseName;
+
 const database = {
     getDb: async function getDb () {
         try {
@@ -19,8 +22,12 @@ const database = {
 
         username = process.env.USERNAME || config.username;
         password = process.env.PASSWORD || config.password;
-        let dsn = `mongodb+srv://${config.username}:${config.password}@$cluster0.c7v9q.mongodb.net/editor?retryWrites=true&w=majority`;
-        //let dsn = `mongodb+srv://${config.username}:${config.password}@${config.cluster}.c7v9q.mongodb.net/${config.database}?retryWrites=true&w=majority`;
+        collectionName = process.env.COLLECTION || config.collection;
+        cluster = process.env.CLUSTER || config.cluster;
+        databaseName = process.env.DATABASE || config.database;
+
+        //let dsn = `mongodb+srv://${config.username}:${config.password}@$cluster0.c7v9q.mongodb.net/editor?retryWrites=true&w=majority`;
+        let dsn = `mongodb+srv://${username}:${password}@${cluster}.c7v9q.mongodb.net/${databaseName}?retryWrites=true&w=majority`;
         if (process.env.NODE_ENV === 'test') {
             dsn = "mongodb://localhost:27017/test";
         }
