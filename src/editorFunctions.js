@@ -28,7 +28,6 @@ async function getAll() {
 async function getOne(id) {
     let db = await database.getDb();
     const res = await db.collection.findOne({_id: ObjectId(id)});
-    console.log("getOne")
     await db.client.close;
 
     return res
