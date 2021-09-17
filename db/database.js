@@ -4,11 +4,11 @@
  "use strict";
 
 const mongo = require("mongodb").MongoClient;
-const collectionName = config.collection;
+//const collectionName = config.collection;
 let config;
 let username;
 let password;
-
+const collectionName = "editorCollection";
 const database = {
     getDb: async function getDb () {
         try {
