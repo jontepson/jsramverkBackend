@@ -6,12 +6,12 @@
 const mongo = require("mongodb").MongoClient;
 //const collectionName = config.collection;
 //let config = require("./config.json");
+let config;
 let username;
 let password;
 let collectionName;
 let cluster;
 let databaseName;
-const fs = require("fs");
 
 const database = {
     getDb: async function getDb () {
@@ -21,7 +21,7 @@ const database = {
             console.log(e)
         }
 
-        username = process.env.USERNAME || config.username;
+        username = process.env.MONGODBUSERNAME || config.username;
         password = process.env.PASSWORD || config.password;
         collectionName = process.env.COLLECTION || config.collection;
         cluster = process.env.CLUSTER || config.cluster;
@@ -29,6 +29,7 @@ const database = {
 
         //let dsn = `mongodb+srv://${config.username}:${config.password}@${config.cluster}.c7v9q.mongodb.net/${config.database}?retryWrites=true&w=majority`;
         let dsn = `mongodb+srv://${username}:${password}@${cluster}.c7v9q.mongodb.net/${databaseName}?retryWrites=true&w=majority`;
+        //console.log(dsn)
         if (process.env.NODE_ENV === 'test') {
             dsn = "mongodb://localhost:27017/test";
         }

@@ -44,6 +44,7 @@ app.use('/', editor);
 // Catch 404 and forward to error handler
 // Put this last
 app.use((req, res, next) => {
+    console.log("SERVER.JS CRASH 1")
     var err = new Error("Not Found");
     err.status = 404;
     next(err);
@@ -53,7 +54,7 @@ app.use((err, req, res, next) => {
     if (res.headersSent) {
         return next(err);
     }
-
+    console.log("SERVER.JS CRASH 2")
     res.status(err.status || 500).json({
         "errors": [
             {
@@ -66,7 +67,6 @@ app.use((err, req, res, next) => {
 });
 
 // Start up server
-const server = httpServer.listen(port, () => console.log(`Example app listening on port ${port}!`));
 const io = socketIo(httpServer, {
     cors: {
       //origin: "http://localhost:3000",
@@ -87,4 +87,6 @@ io.sockets.on('connection', function(socket) {
         //editorFunctions.updateDoc(data);
     });
 });
+const server = httpServer.listen(port, () => console.log(`Example app listening on port ${port}!`));
+
 module.exports = server;
