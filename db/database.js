@@ -9,12 +9,12 @@ const mongo = require("mongodb").MongoClient;
 let config;
 let username;
 let password;
-let collectionName;
+//let collectionName;
 let cluster;
 let databaseName;
 
 const database = {
-    getDb: async function getDb () {
+    getDb: async function getDb (collectionName) {
         try {
             config = require("./config.json");
         } catch (e) {
@@ -23,7 +23,7 @@ const database = {
 
         username = process.env.MONGODBUSERNAME || config.username;
         password = process.env.PASSWORD || config.password;
-        collectionName = process.env.COLLECTION || config.collection;
+        //collectionName = process.env.COLLECTION || config.collection;
         cluster = process.env.CLUSTER || config.cluster;
         databaseName = process.env.DATABASE || config.database;
 
