@@ -51,7 +51,7 @@ router.get("/editor", async (req, res, next) => checkToken(req, res, next) , asy
 
 router.post("/userDocs", async (req, res, next) => checkToken(req, res, next) , async (req, res) => {
     console.log("Got a GET request, sending back 200 default.");
-    console.log(req.body.user)
+    //console.log(req.body.user)
     await editor.getAllValid(req.body, res);
     
 });
@@ -122,4 +122,6 @@ router.delete("/users", async (req, res) => {
     await login.deleteUser(req.body);
     res.status(204).send();
 });
+
+
 module.exports = router;

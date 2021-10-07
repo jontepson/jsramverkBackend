@@ -33,9 +33,52 @@ if (process.env.NODE_ENV !== 'test') {
     app.use(morgan('combined')); // 'combined' outputs the Apache style LOGs
 }
 
-// Add a route
+// GRAPHQL route
+const jwt = require('jsonwebtoken');
+// checkToken middleware
+let config;
+try {
+    config  = require("./db/config.json");
+} catch (error) {
+    console.error(error);
+}
+const jwtSecret = process.env.JWT_SECRET || config.secret;
+function checkToken(req, res, next) {
+   // console.log(req.headers)
+    const token = req.headers['x-access-token'];
+
+    jwt.verify(token, jwtSecret, function(err, decoded) {
+        if (err) {
+            // send error response
+            return res.status(401).json({
+                errors: {
+                    status: 401,
+                    source: "/editor",
+                    title: "Token is invalid",
+                    detail: "Token is not valid."
+                }
+            });
+        }
+
+        // Valid token send on the request
+        next();
+    });
+}
+const { graphqlHTTP } = require('express-graphql');
+const { GraphQLSchema } = require("graphql");
+const RootQueryType = require("./graphql/root.js");
+const visual = false; // SHOULD BE FALSE IN  PRODUCTION !IMPORTANT
+const schema = new GraphQLSchema({
+    query: RootQueryType
+});
+app.use('/graphql', async (req, res, next) => checkToken(req, res, next), graphqlHTTP({
+    schema: schema,
+    graphiql: visual
+}));
+
+// Editor routes
 const editor = require('./routes/editor');
-const editorFunctions = require("./src/editorFunctions");
+//const editorFunctions = require("./src/editorFunctions");
 
 app.use('/', editor);
 

@@ -9,7 +9,8 @@
      updateDoc: updateDoc,
      deleteDoc: deleteDoc,
      getOne: getOne,
-     getAllValid: getAllValid
+     getAllValid: getAllValid,
+     getAllValidGraphQL: getAllValidGraphQL
  };
 
 const { ObjectId } = require("bson");
@@ -25,6 +26,50 @@ async function getAll() {
 
     return resultSet
 }
+//GET ALL VALID NEW FOR GRAPHQL
+
+async function getAllValidGraphQL(body, res=undefined) {
+    let db;
+
+        try {
+            if (!body.user) {
+                return res.status(401).json({
+                    errors: {
+                        status: 401,
+                        source: "/userDocs",
+                        title: "No email provided",
+                        detail: "Email is missing"
+                    }
+                });
+            }
+            let user = body.user;
+            db = await database.getDb("editorCollection");
+
+            const userDocs = await db.collection.find({valid_users: { $in: [user] }}).toArray();
+            
+            if (res === undefined) {
+                return userDocs;
+            }
+
+            return res.json({
+                data: userDocs
+            });
+        } catch (e) {
+            return res.json({
+                errors: {
+                    status: 500,
+                    name: "Database Error",
+                    description: e.message,
+                    path: "/",
+                }
+            })
+        } finally {
+            await db.client.close();
+    }
+}
+
+
+// GET ALL VALID OLD FOR API
 async function getAllValid(body, res) {
     if (!body.user) {
         return res.status(401).json({
