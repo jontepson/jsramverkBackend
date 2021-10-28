@@ -87,7 +87,8 @@ describe('editor routes no token', () => {
     });
     describe('Put database with content', () => {
         it('200 HAPPY PATH', async () => {
-            let id = await Find();
+            let id = "838382182823";
+            //let id = await Find();
             let data = {
                 name: "test name",
                 content: "testcontent",
@@ -134,7 +135,7 @@ describe('editor routes with token', () => {
                 .set('content-type', 'application/x-www-form-urlencoded')
                 .send(defaultUser)
                 .end((err, res) => {
-                    res.should.have.status(401);
+                    res.should.have.status(201);
                     done();
                 });
         });
