@@ -7,6 +7,8 @@ var router = express.Router();
 const editor = require("../src/editorFunctions")
 const login = require("../src/loginFunctions")
 const jwt = require('jsonwebtoken');
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 // checkToken middleware
 let config;
 try {
@@ -14,7 +16,10 @@ try {
 } catch (error) {
     console.error(error);
 }
+const sgMailApiKey = process.env.SENDGRID_API_KEY || config.SENDGRID_API_KEY
 const jwtSecret = process.env.JWT_SECRET || config.secret;
+
+sgMail.setApiKey(sgMailApiKey);
 function checkToken(req, res, next) {
     const token = req.headers['x-access-token'];
 
@@ -35,6 +40,13 @@ function checkToken(req, res, next) {
         next();
     });
 }
+router.post("/invite", async (req, res) => {
+    var content = await editor.invite(req.body, sgMail, res)
+    res.json(content)
+    
+    
+});
+
 router.get("/editor/:id", async (req, res) => {
     console.log("Got a GET request, sending back 200 default, get one");
     var content = await editor.getOne(req.params.id);
@@ -58,6 +70,7 @@ router.post("/userDocs", async (req, res, next) => checkToken(req, res, next) , 
 
 router.post("/editor", async (req, res, next) => checkToken(req, res, next) , (req, res) => {
     console.log("Got a POST request, send back 201 Created");
+    //console.log(req.body)
     if(req.body.name && req.body.content) {
         editor.createNew(req.body);
         res.json({
@@ -75,7 +88,7 @@ router.post("/editor", async (req, res, next) => checkToken(req, res, next) , (r
 
 router.put("/editor", async (req, res, next) => checkToken(req, res, next) , async (req, res) => {
     // PUT requests should return 204 No Content UPDATE
-    console.log(req.body);
+    //console.log(req.body);
     if(req.body.name && req.body.content && req.body.id) {
         await editor.updateDoc(req.body);
         res.status(204).send();
@@ -85,8 +98,7 @@ router.put("/editor", async (req, res, next) => checkToken(req, res, next) , asy
             msg: "Fail, need _id, name and content",
         }
     });
-    console.log(result);
-    res.status(204).send();
+    //res.status(204).send();
 });
 
 router.delete("/editor", async (req, res) => {
@@ -104,7 +116,7 @@ router.post("/signup", (req, res) => {
     }
 });
 router.post("/login", async (req, res) => {
-    console.log("Got a get request, send back 201 Created");
+    console.log("Got a post request, send back 200 Success");
     await login.login(req.body, res);
 
 });

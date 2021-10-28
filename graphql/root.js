@@ -26,7 +26,8 @@ const docsType = new GraphQLObjectType({
         _id: { type: GraphQLNonNull(GraphQLString) },
         name: { type: GraphQLNonNull(GraphQLString) },
         content: { type: GraphQLNonNull(GraphQLString) },
-        valid_users: { type: GraphQLNonNull(GraphQLList(GraphQLString))}
+        valid_users: { type: GraphQLNonNull(GraphQLList(GraphQLString))},
+        mode: { type: GraphQLNonNull(GraphQLString)}
     })
 })
 
@@ -53,10 +54,11 @@ const RootQueryType = new GraphQLObjectType({
             type: GraphQLList(docsType),
             description: 'All docs for 1 email',
             args: {
-                user: { type: GraphQLString}
+                user: { type: GraphQLString},
+                mode: { type: GraphQLString}
             },
             resolve: async function(parent, args) {
-                // need res to work, how to get it for graphql
+                // need res to work, how to get it for graphql FIXED WITH MIDDLEWARE
                 return await editor.getAllValidGraphQL(args);
             }
         },

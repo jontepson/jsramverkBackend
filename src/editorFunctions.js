@@ -10,7 +10,8 @@
      deleteDoc: deleteDoc,
      getOne: getOne,
      getAllValid: getAllValid,
-     getAllValidGraphQL: getAllValidGraphQL
+     getAllValidGraphQL: getAllValidGraphQL,
+     invite: invite
  };
 
 const { ObjectId } = require("bson");
@@ -26,8 +27,22 @@ async function getAll() {
 
     return resultSet
 }
-//GET ALL VALID NEW FOR GRAPHQL
+async function invite(body, sgMail, res) {
+    try {
+        //console.log(body)
+        await sgMail.send(body);
+        res.json(204)
+      } catch (error) {
+        console.error(error);
+    
+        if (error.response) {
+          console.error(error.response.body)
+        }
+        res.json(403)
+      }
+}
 
+//GET ALL VALID NEW FOR GRAPHQL
 async function getAllValidGraphQL(body, res=undefined) {
     let db;
 
@@ -43,9 +58,10 @@ async function getAllValidGraphQL(body, res=undefined) {
                 });
             }
             let user = body.user;
+            let mode = body.mode;
             db = await database.getDb("editorCollection");
 
-            const userDocs = await db.collection.find({valid_users: { $in: [user] }}).toArray();
+            const userDocs = await db.collection.find({valid_users: { $in: [user] }, mode: mode}).toArray();
             
             if (res === undefined) {
                 return userDocs;
@@ -113,7 +129,8 @@ async function createNew(body) {
     var doc = {
         content: body.content,
         name: body.name,
-        valid_users: body.valid_users
+        valid_users: body.valid_users,
+        mode: body.mode
     }
     db.collection.insertOne(doc);
 
@@ -126,7 +143,7 @@ async function updateDoc(body) {
     // uppdatera content
     // eller namn
     //db.collection.updateOne({item: })
-    await db.collection.updateOne({_id: ObjectId(body.id)}, { $set: {content: body.content, name: body.name, valid_users: body.valid_users}}, {upsert:true});
+    await db.collection.updateOne({_id: ObjectId(body.id)}, { $set: {content: body.content, name: body.name, valid_users: body.valid_users, mode: body.mode}}, {upsert:true});
     await db.client.close;
 }
 

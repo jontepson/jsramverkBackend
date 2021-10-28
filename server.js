@@ -17,6 +17,7 @@ app.use((req, res, next) => {
     console.log(req.path);
     next();
 });
+
 app.use(cors());
 
 app.use(bodyParser.json());
@@ -75,6 +76,7 @@ app.use('/graphql', async (req, res, next) => checkToken(req, res, next), graphq
     schema: schema,
     graphiql: visual
 }));
+
 
 // Editor routes
 const editor = require('./routes/editor');
